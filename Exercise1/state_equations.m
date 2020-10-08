@@ -1,8 +1,7 @@
 T = 1; % Time step is one second
 F = [1 0 T 0; 0 1 0 T; 0 0 1 0; 0 0 0 1]; % State transition matrix
 proNoise = 0.01; % Process noise intensity q
-Q = proNoise*[(T^3)/3 0 (T^2)/2 0 ; 0 (T^3)/3 0 (T^2)/2; (T^2)/2 0 T
- 0; 0 (T^2)/2 0 T]; % Noise matrix
+Q = proNoise*[(T^3)/3 0 (T^2)/2 0 ; 0 (T^3)/3 0 (T^2)/2; (T^2)/2 0 T 0; 0 (T^2)/2 0 T]; % Noise matrix
 sigmaX = 5; % Measurement error standard deviation in x
 sigmaY = 5; % Measurement error standard deviation in y
 R = [sigmaX^2 0;0 sigmaY^2]; % Measurement error covariance matrix
@@ -21,13 +20,13 @@ targetState4 = zeros(4,60);
 targetState4(:,1) = [0 0 0 10];
 % Generate trajectories
 for i = 2:60
- % Deterministic (without noise)
- targetStateDeter(:,i) = F*targetStateDeter(:,i-1);
- % Non-deterministic (with noise)
- targetState(:,i) = F*targetState(:,i-1)+mvnrnd([0 0 0 0]',Q)';
- targetState2(:,i) = F*targetState2(:,i-1)+mvnrnd([0 0 0 0]',Q)';
- targetState3(:,i) = F*targetState3(:,i-1)+mvnrnd([0 0 0 0]',Q)';
- targetState4(:,i) = F*targetState4(:,i-1)+mvnrnd([0 0 0 0]',Q)';
+    % Deterministic (without noise)
+    targetStateDeter(:,i) = F*targetStateDeter(:,i-1);
+    % Non-deterministic (with noise)
+    targetState(:,i) = F*targetState(:,i-1)+mvnrnd([0 0 0 0]',Q)';
+    targetState2(:,i) = F*targetState2(:,i-1)+mvnrnd([0 0 0 0]',Q)';
+    targetState3(:,i) = F*targetState3(:,i-1)+mvnrnd([0 0 0 0]',Q)';
+    targetState4(:,i) = F*targetState4(:,i-1)+mvnrnd([0 0 0 0]',Q)';
 end
 % Plot for exercise 1
 figure
@@ -48,16 +47,15 @@ xlim([-60 60])
 xlabel('X (m)')
 ylabel('Y (m)')
 title('Non-Deterministic trajectory')
-% Arrays for storing measurements, estimate from track and Kalman
- filter
+% Arrays for storing measurements, estimate from track and Kalman filter
 % gain
 measurements = zeros(2,60);
 % Indexing for 60 times steps
 for i = 1:60
- % Generate a measurement based on
- z = H*targetState(:,i)+mvnrnd([0 0]',R)';
- %Store all the measurements
- measurements(:,i) = z;
+    % Generate a measurement based on
+    z = H*targetState(:,i)+mvnrnd([0 0]',R)';
+    %Store all the measurements
+    measurements(:,i) = z;
 end
 % Plot for exercise 3
 figure
